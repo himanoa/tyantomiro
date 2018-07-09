@@ -8,6 +8,7 @@ requests = "*"
 discord = "*"
 python-dotenv = "*"
 google-api-python-client = "*"
+pynacl = "*"
 
 [dev-packages]
 sexpdata = "*"
