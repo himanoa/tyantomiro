@@ -19,6 +19,14 @@ with open('./list', 'r') as file:
 client = discord.Client()
 
 
+async def clean_read_notification():
+    await client.wait_until_ready()
+    while not client.is_closed:
+        global read_notifaction
+        read_notifaction = []
+        await asyncio.sleep(60 * 60)
+
+
 def build_params(channel_id, key=getenv('YOUTUBE_TOKEN')):
     return {
         'part': 'snippet',
@@ -69,5 +77,6 @@ async def on_message(message):
             vc = client.get_channel(message.author.voice_channel.id)
             await client.join_voice_channel(vc)
 
-client.loop.create_task((fetch_youtube_api()))
+client.loop.create_task(fetch_youtube_api())
+client.loop.create_task(clean_read_notification())
 client.run(getenv('DISCORD_TOKEN'))
