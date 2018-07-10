@@ -10,6 +10,8 @@ load_dotenv(find_dotenv())
 
 api_url = 'https://www.googleapis.com/youtube/v3/search'
 
+read_notifaction = []
+
 with open('./list', 'r') as file:
     channel_ids = file.read().split('\n')[0:-1]
     print(file.read().split('\n'))
@@ -36,16 +38,19 @@ with open('./list', 'r') as file:
         channel_url = "https://www.youtube.com/channel/{}/live"
         await client.wait_until_ready()
         notify_channel = discord.Object(id=getenv('CHANNEL_ID'))
-        interval_minutes = 10  # 5分おきに
+        interval_minutes = 60 * 5  # 5分おきに
         print(channel_ids)
         while not client.is_closed:
             for channel_id in channel_ids:
+                if channel_id in read_notifaction:
+                    continue
                 items = (get(api_url, build_params(channel_id))
                          .json().get('items'))
                 if items:
                     play_sound()
                     await client.send_message(notify_channel,
                                               channel_url.format(channel_id))
+                    read_notifaction.append(channel_id)
             await asyncio.sleep(interval_minutes)
 
     @client.event
