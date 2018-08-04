@@ -16,4 +16,4 @@ def matcher(responses, message, client):
             [await res["responses"].execute()
                 for res in compiled_responses
                 if res.get("pattern").match(text)]
-    return _matcher
+        return _matcher
