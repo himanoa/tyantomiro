@@ -17,4 +17,4 @@ def create_matcher(responses):
                                            client, message)
                 for res in compiled_responses
                 if res.get("pattern").match(text)]
-        return _matcher
+    return _matcher

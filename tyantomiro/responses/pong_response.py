@@ -1,4 +1,4 @@
-from base_response import BaseResponse
+from .base_response import BaseResponse
 
 
 class PongResponse(BaseResponse):
