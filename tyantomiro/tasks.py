@@ -31,7 +31,8 @@ def create_fetch_youtube_api(client,
                     continue
                 async with aiohttp.ClientSession() as session:
                     items = (await session.get(api_url,
-                                               build_params(channel_id))
+                                               build_params(channel_id,
+                                                            youtube_key))
                              .json().get('items'))
                     if items:
                         await client.send_message(notify_channel_id,
