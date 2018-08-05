@@ -10,16 +10,13 @@ responses = [
     {"pattern": r'^ping', "response": PongResponse()}
 ]
 
-matcher = create_matcher(responses)
-
 read_notifaction = []
-
 client = discord.Client()
 
+subscribed_channel_ids = getenv("SUBSCRIBED_CHANNNEL_IDS").split(',')
+notify_channel_id = getenv("NOTIFY_CHANNEL_ID").split(',')
 
-@client.event
-async def on_message(message):
-    await matcher(message, client)
+matcher = create_matcher(responses)
 
 
 client.loop.create_task(
@@ -27,9 +24,15 @@ client.loop.create_task(
                                    read_notifaction)())
 client.loop.create_task(
     create_fetch_youtube_api(client,
-                             [],
-                             discord.Object(id="asadsad"),
+                             subscribed_channel_ids,
+                             discord.Object(id="notify_channel_id"),
                              getenv('YOUTUBE_KEY'),
                              read_notifaction)()
 )
+
+
+@client.event
+async def on_message(message):
+    await matcher(message, client)
+
 client.run(getenv('DISCORD_TOKEN'))
