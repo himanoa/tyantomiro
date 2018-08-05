@@ -30,16 +30,17 @@ def create_fetch_youtube_api(client,
                 if channel_id in read_notifaction:
                     continue
                 async with aiohttp.ClientSession() as session:
-                    items = (await session.get(api_url,
-                                               build_params(channel_id,
-                                                            youtube_key))
-                             .json().get('items'))
-                    if items:
-                        await client.send_message(notify_channel_id,
-                                                  channel_url.format(
-                                                      channel_id
-                                                  ))
-                        read_notifaction.append(channel_id)
+                    async with session.get(api_url,
+                                           params=
+                                           build_params(channel_id, youtube_key)
+                                           ) as r:
+                        items = (await r.json()).get('items')
+                        if items:
+                            await client.send_message(notify_channel_id,
+                                                      channel_url.format(
+                                                          channel_id
+                                                      ))
+                            read_notifaction.append(channel_id)
             await asyncio.sleep(interval_minutes)
     return fetch_youtube_api
 
