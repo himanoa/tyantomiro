@@ -15,10 +15,6 @@ client = discord.Client()
 subscribed_channel_ids = getenv("SUBSCRIBED_CHANNNEL_IDS").split(',')
 notify_channel_id = getenv("NOTIFY_CHANNEL_ID")
 
-print(read_notifaction)
-print(subscribed_channel_ids)
-print(notify_channel_id)
-print(getenv("YOUTUBE_TOKEN"))
 
 matcher = create_matcher(responses)
 
