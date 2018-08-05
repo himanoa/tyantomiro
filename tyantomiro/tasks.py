@@ -24,7 +24,6 @@ def create_fetch_youtube_api(client,
         channel_url = "https://www.youtube.com/channel/{}/live"
         await client.wait_until_ready()
         interval_minutes = 60 * 5  # 5分おきに
-        print(channel_ids)
         while not client.is_closed:
             for channel_id in channel_ids:
                 if channel_id in read_notifaction:

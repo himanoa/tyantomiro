@@ -12,9 +12,13 @@ responses = [
 
 read_notifaction = []
 client = discord.Client()
-
 subscribed_channel_ids = getenv("SUBSCRIBED_CHANNNEL_IDS").split(',')
-notify_channel_id = getenv("NOTIFY_CHANNEL_ID").split(',')
+notify_channel_id = getenv("NOTIFY_CHANNEL_ID")
+
+print(read_notifaction)
+print(subscribed_channel_ids)
+print(notify_channel_id)
+print(getenv("YOUTUBE_TOKEN"))
 
 matcher = create_matcher(responses)
 
@@ -25,8 +29,8 @@ client.loop.create_task(
 client.loop.create_task(
     create_fetch_youtube_api(client,
                              subscribed_channel_ids,
-                             discord.Object(id="notify_channel_id"),
-                             getenv('YOUTUBE_KEY'),
+                             discord.Object(id=notify_channel_id),
+                             getenv('YOUTUBE_TOKEN'),
                              read_notifaction)()
 )
 
