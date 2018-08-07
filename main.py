@@ -43,19 +43,18 @@ async def on_server_join(server):
     print('server joined')
     print(type(server))
     params = {
-        server.id: {
-            'subscribed_channel': [],
-            'notify_channel_id': '',
-        }
+        'subscribed_channel': [],
+        'notify_channel_id': '',
     }
     await firebase.put(
-        path="server",
+        path="server/{}".format(server.id),
         value=params
     )
 
 
 @client.event
 async def on_message(message):
+    print(message.server.id)
     await matcher(message, client)
 
 client.run(getenv('DISCORD_TOKEN'))
