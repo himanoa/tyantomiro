@@ -1,4 +1,6 @@
 import discord
+import aiofirebase
+from pprint import pprint
 from os import getenv
 
 from tyantomiro.matcher import create_matcher
@@ -9,6 +11,9 @@ from tyantomiro.tasks import (create_clean_read_notification,
 responses = [
     {"pattern": r'^ping', "response": PongResponse()}
 ]
+
+firebase = aiofirebase.FirebaseHTTP("https://{}.firebaseio.com/"
+                                    .format(getenv('FIREBASE_ID')))
 
 read_notifaction = []
 client = discord.Client()
@@ -29,6 +34,22 @@ client.loop.create_task(
                              getenv('YOUTUBE_TOKEN'),
                              read_notifaction)()
 )
+
+
+@client.event
+async def on_server_join(server):
+    print('server joined')
+    print(type(server))
+    params = {
+        server.id: {
+            'subscribed_channel': [],
+            'notify_channel_id': '',
+        }
+    }
+    await firebase.put(
+        path="server",
+        value=params
+    )
 
 
 @client.event
