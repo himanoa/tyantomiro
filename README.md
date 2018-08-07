@@ -18,6 +18,12 @@ SUBSCRIBED_CHANNNEL_IDS={購読したいYoutubeのチャンネルID(,で区切�
 2. `docker build -t tyantomiro .` を実行
 3. `docker run -itd tyantomiro` を実行
 
+## テストの実行方法
+
+```bash
+python -m unittest
+```
+
 ## LICENSE
 
 MIT

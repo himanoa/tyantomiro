@@ -4,6 +4,7 @@ from re import sub, compile
 def get_removed_mention_text(message, client):
     if [user for user in message.mentions if user == client.user]:
         return (sub(r'<.+>\s', '', message.content))
+    return message.content
 
 
 def create_matcher(responses):
