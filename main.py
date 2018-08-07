@@ -5,12 +5,14 @@ from os import getenv
 
 from tyantomiro.matcher import create_matcher
 from tyantomiro.responses.pong_response import PongResponse
+from tyantomiro.responses.help_response import HelpResponse
 from tyantomiro.tasks import (create_clean_read_notification,
                               create_fetch_youtube_api)
 
 responses = [
     {"pattern": r'^ping', "response": PongResponse()}
 ]
+responses.append({"pattern": r'^help', "response": HelpResponse(responses)})
 
 firebase = aiofirebase.FirebaseHTTP("https://{}.firebaseio.com/"
                                     .format(getenv('FIREBASE_ID')))
