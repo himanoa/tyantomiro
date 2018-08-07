@@ -7,12 +7,14 @@ name = "pypi"
 discord = "*"
 google-api-python-client = "*"
 pynacl = "*"
+aiofirebase = "*"
 
 [dev-packages]
 sexpdata = "*"
 websocket-client = "*"
 jedi = "*"
 neovim = "*"
+ipython = "*"
 
 [requires]
 python_version = "3.6"

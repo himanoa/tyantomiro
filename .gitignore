@@ -1,3 +1,4 @@
 .env
 vtuber_notification.wav
 list
+__pycache__/
