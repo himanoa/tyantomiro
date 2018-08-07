@@ -1,21 +1,26 @@
 import discord
 import aiofirebase
-from pprint import pprint
 from os import getenv
 
 from tyantomiro.matcher import create_matcher
 from tyantomiro.responses.pong_response import PongResponse
 from tyantomiro.responses.help_response import HelpResponse
+from tyantomiro.responses.change_notify_channel_response import (
+    ChangeNotifyChannelResponse
+)
 from tyantomiro.tasks import (create_clean_read_notification,
                               create_fetch_youtube_api)
 
+firebase = aiofirebase.FirebaseHTTP("https://{}.firebaseio.com/"
+                                    .format(getenv('FIREBASE_ID')))
+
 responses = [
-    {"pattern": r'^ping', "response": PongResponse()}
+    {"pattern": r'^ping', "response": PongResponse()},
+    {"pattern": r'^set_notify',
+     "response": ChangeNotifyChannelResponse(firebase)}
 ]
 responses.append({"pattern": r'^help', "response": HelpResponse(responses)})
 
-firebase = aiofirebase.FirebaseHTTP("https://{}.firebaseio.com/"
-                                    .format(getenv('FIREBASE_ID')))
 
 read_notifaction = []
 client = discord.Client()

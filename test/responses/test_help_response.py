@@ -36,7 +36,7 @@ class TestHelpResponse(unittest.TestCase):
                 return "foobar"
 
         self.assertEqual(
-            HelpResponse([StubResponse()]).create_help(StubClient()), expected
+            HelpResponse([{"response": StubResponse(), 'pattern': r'^s'}]).create_help(StubClient()), expected
         )
 
     def test_should_be_run_execute(self):
@@ -47,8 +47,8 @@ class TestHelpResponse(unittest.TestCase):
             expected = ''
             await HelpResponse([]).execute(
                 '',
-                StubMessage(),
-                StubClient()
+                StubClient(),
+                StubMessage()
             ), expected
 
         coro = asyncio.coroutine(run_test)
