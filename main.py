@@ -11,8 +11,8 @@ from tyantomiro.responses.change_notify_channel_response import (
 from tyantomiro.responses.subscribe_youtube_channel_response import (
     SubscribeYoutubeChannelResponse
 )
-from tyantomiro.tasks import (create_clean_read_notification,
-                              create_fetch_youtube_api)
+from tyantomiro.tasks import (create_clean_send_notifycation,
+                              create_notify_channel_task)
 
 firebase = aiofirebase.FirebaseHTTP("https://{}.firebaseio.com/"
                                     .format(getenv('FIREBASE_ID')))
@@ -37,14 +37,10 @@ notify_channel_id = getenv("NOTIFY_CHANNEL_ID")
 matcher = create_matcher(responses)
 
 client.loop.create_task(
-    create_clean_read_notification(client,
-                                   read_notifaction)())
+    create_clean_send_notifycation(client,
+                                   firebase)())
 client.loop.create_task(
-    create_fetch_youtube_api(client,
-                             subscribed_channel_ids,
-                             discord.Object(id=notify_channel_id),
-                             youtube_token,
-                             read_notifaction)()
+    create_notify_channel_task(client, firebase, youtube_token)()
 )
 
 
