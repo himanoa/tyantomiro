@@ -4,7 +4,7 @@ from tyantomiro.youtube_api import get_channel, ChannelNotFoundError
 
 async def subscribe_channel(firebase, youtube_key, channel_id, server_id):
     await get_channel(channel_id, youtube_key)
-    path = 'youtube_channel/{}'.format(channel_id)
+    path = 'youtube_channels/{}'.format(channel_id)
     await firebase.patch(
         path=path,
         value={
