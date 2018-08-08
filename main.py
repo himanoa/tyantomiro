@@ -11,6 +11,9 @@ from tyantomiro.responses.change_notify_channel_response import (
 from tyantomiro.responses.subscribe_youtube_channel_response import (
     SubscribeYoutubeChannelResponse
 )
+from tyantomiro.responses.unsubscribe_youtube_channel_response import (
+    UnsubscribeYoutubeChannelResponse
+)
 from tyantomiro.tasks import (create_clean_read_notification,
                               create_fetch_youtube_api)
 
@@ -23,7 +26,9 @@ responses = [
     {"pattern": r'^set_notify',
      "response": ChangeNotifyChannelResponse(firebase)},
     {"pattern": r'^subscribe (.+)',
-     "response": SubscribeYoutubeChannelResponse(firebase, youtube_token)}
+     "response": SubscribeYoutubeChannelResponse(firebase, youtube_token)},
+    {"pattern": r'^unsubscribe (.+)',
+     "response": UnsubscribeYoutubeChannelResponse(firebase, youtube_token)}
 ]
 
 responses.append({"pattern": r'^help', "response": HelpResponse(responses)})
