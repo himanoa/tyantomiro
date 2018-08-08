@@ -1,54 +1,83 @@
 import asyncio
-from tyantomiro.youtube_api import search_living_channel
-
-api_url = 'https://www.googleapis.com/youtube/v3/search'
+from tyantomiro.youtube_api import search_living_channel, build_params
 
 
-def build_params(channel_id, key):
-    return {
-        'part': 'snippet',
-        'channelId': channel_id,
-        'type': 'video',
-        'eventType': 'live',
-        'key': key
-    }
+channel_url = "https://www.youtube.com/channel/{}/live"
+
+def create_discord_task(client, task_function):
+    async def _task(*args, **kargs):
+        await client.wait_until_ready()
+        while not client.is_closed:
+            await task_function(*args, **kargs)
+    return _task
 
 
-def create_fetch_youtube_api(
+async def notify_task(client, firebase, server_id, channel_id):
+    server = await firebase.get(path='server/{}'.format(server_id))
+    if server:
+        if server.get('send_notifications', {}).get(channel_id):
+            return ;
+        await client.send_message(
+            server.get(notify_channel_id),
+            channel_url.format(channel_id)
+        )
+        await firebase.patch(
+            path='server/{}/send_notifications',
+            value={
+                channel_id: True
+            }
+        )
+
+async def fetch_task(
     client,
-    channel_ids,
-    notify_channel_id,
+    channel_id,
+    subscribed_servers,
     youtube_key,
-    read_notifaction
+    firebase
 ):
+    items = await search_living_channel(channel_id, youtube_key)
+    if items:
+        for server_id in subscribed_servers:
+            client.loop.create_task(
+                notify_task(client, firebase, server_id, channel_id)
+            )
 
-    async def fetch_youtube_api():
-        channel_url = "https://www.youtube.com/channel/{}/live"
+
+async def fork_fetch_task(client, firebase, youtube_key):
+    channels = await firebase.get(
+        path='youtube_channels'
+    )
+    for channel_id in channels.keys():
+        subscribed_servers = channels.get(channel_id).get('subscribed_servers')
+        client.loop.create_task(
+            fetch_task(
+                client,
+                channel_id,
+                subscribed_servers,
+                youtube_key,
+                firebase
+            )
+        )
+
+def create_notify_channel_task(client, firebase, youtube_key):
+    interval_minutes = 60 * 5  # 5分おきに
+    async def _task():
+        await fork_fetch_task(client, firebase, youtube_key)
+        await asyncio.sleep(interval_minutes)
+    return create_discord_task(client, _task)
+
+
+def create_clean_send_notifycation(client, firebase):
+
+    async def clean_send_notification():
         await client.wait_until_ready()
-        interval_minutes = 60 * 5  # 5分おきに
         while not client.is_closed:
-            for channel_id in channel_ids:
-                if channel_id in read_notifaction:
-                    continue
-                if await search_living_channel(channel_id, youtube_key):
-                    await client.send_message(
-                        notify_channel_id,
-                        channel_url.format(
-                            channel_id
-                        )
-                    )
-                    read_notifaction.append(channel_id)
-            await asyncio.sleep(interval_minutes)
-    return fetch_youtube_api
-
-
-def create_clean_read_notification(client, read_notifaction):
-
-    async def clean_read_notification():
-        await client.wait_until_ready()
-        while not client.is_closed:
-            global read_notifaction
-            read_notifaction = []
             await asyncio.sleep(60 * 60)
+            servers = await firebase.get(path='servers')
+            for server_id in servers.keys():
+                await firebase.put(
+                    path='servers/{}/send_notifications',
+                    value={}
+                )
 
-    return clean_read_notification
+    return clean_send_notification
