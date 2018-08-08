@@ -8,17 +8,24 @@ from tyantomiro.responses.help_response import HelpResponse
 from tyantomiro.responses.change_notify_channel_response import (
     ChangeNotifyChannelResponse
 )
+from tyantomiro.responses.subscribe_youtube_channel_response import (
+    SubscribeYoutubeChannelResponse
+)
 from tyantomiro.tasks import (create_clean_read_notification,
                               create_fetch_youtube_api)
 
 firebase = aiofirebase.FirebaseHTTP("https://{}.firebaseio.com/"
                                     .format(getenv('FIREBASE_ID')))
+youtube_token = getenv('YOUTUBE_TOKEN')
 
 responses = [
     {"pattern": r'^ping', "response": PongResponse()},
     {"pattern": r'^set_notify',
-     "response": ChangeNotifyChannelResponse(firebase)}
+     "response": ChangeNotifyChannelResponse(firebase)},
+    {"pattern": r'^subscribe (.+)',
+     "response": SubscribeYoutubeChannelResponse(firebase, youtube_token)}
 ]
+
 responses.append({"pattern": r'^help', "response": HelpResponse(responses)})
 
 
@@ -27,9 +34,7 @@ client = discord.Client()
 subscribed_channel_ids = getenv("SUBSCRIBED_CHANNNEL_IDS").split(',')
 notify_channel_id = getenv("NOTIFY_CHANNEL_ID")
 
-
 matcher = create_matcher(responses)
-
 
 client.loop.create_task(
     create_clean_read_notification(client,
@@ -38,7 +43,7 @@ client.loop.create_task(
     create_fetch_youtube_api(client,
                              subscribed_channel_ids,
                              discord.Object(id=notify_channel_id),
-                             getenv('YOUTUBE_TOKEN'),
+                             youtube_token,
                              read_notifaction)()
 )
 

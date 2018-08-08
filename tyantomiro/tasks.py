@@ -1,5 +1,5 @@
 import asyncio
-import aiohttp
+from tyantomiro.youtube_api import search_living_channel
 
 api_url = 'https://www.googleapis.com/youtube/v3/search'
 
@@ -14,11 +14,13 @@ def build_params(channel_id, key):
     }
 
 
-def create_fetch_youtube_api(client,
-                             channel_ids,
-                             notify_channel_id,
-                             youtube_key,
-                             read_notifaction):
+def create_fetch_youtube_api(
+    client,
+    channel_ids,
+    notify_channel_id,
+    youtube_key,
+    read_notifaction
+):
 
     async def fetch_youtube_api():
         channel_url = "https://www.youtube.com/channel/{}/live"
@@ -28,18 +30,14 @@ def create_fetch_youtube_api(client,
             for channel_id in channel_ids:
                 if channel_id in read_notifaction:
                     continue
-                async with aiohttp.ClientSession() as session:
-                    async with session.get(api_url,
-                                           params=
-                                           build_params(channel_id, youtube_key)
-                                           ) as r:
-                        items = (await r.json()).get('items')
-                        if items:
-                            await client.send_message(notify_channel_id,
-                                                      channel_url.format(
-                                                          channel_id
-                                                      ))
-                            read_notifaction.append(channel_id)
+                if await search_living_channel(channel_id, youtube_key):
+                    await client.send_message(
+                        notify_channel_id,
+                        channel_url.format(
+                            channel_id
+                        )
+                    )
+                    read_notifaction.append(channel_id)
             await asyncio.sleep(interval_minutes)
     return fetch_youtube_api
 
