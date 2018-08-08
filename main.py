@@ -36,8 +36,6 @@ responses.append({"pattern": r'^help', "response": HelpResponse(responses)})
 
 read_notifaction = []
 client = discord.Client()
-subscribed_channel_ids = getenv("SUBSCRIBED_CHANNNEL_IDS").split(',')
-notify_channel_id = getenv("NOTIFY_CHANNEL_ID")
 
 matcher = create_matcher(responses)
 
