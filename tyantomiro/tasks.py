@@ -1,4 +1,5 @@
 import asyncio
+from discord import Object
 from tyantomiro.youtube_api import search_living_channel, build_params
 
 
@@ -18,7 +19,7 @@ async def notify_task(client, firebase, server_id, channel_id):
         if server.get('send_notifications', {}).get(channel_id):
             return
         await client.send_message(
-            server.get('notify_channel_id'),
+            Object(id=server.get('notify_channel_id')),
             channel_url.format(channel_id)
         )
         await firebase.patch(
