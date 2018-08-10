@@ -5,10 +5,10 @@ from tyantomiro.youtube_api import search_living_channel, build_params
 channel_url = "https://www.youtube.com/channel/{}/live"
 
 def create_discord_task(client, task_function):
-    async def _task(*args, **kargs):
+    async def _task(*args):
         await client.wait_until_ready()
         while not client.is_closed:
-            await task_function(*args, **kargs)
+            await task_function(*args)
     return _task
 
 
@@ -16,9 +16,9 @@ async def notify_task(client, firebase, server_id, channel_id):
     server = await firebase.get(path='server/{}'.format(server_id))
     if server:
         if server.get('send_notifications', {}).get(channel_id):
-            return ;
+            return
         await client.send_message(
-            server.get(notify_channel_id),
+            server.get('notify_channel_id'),
             channel_url.format(channel_id)
         )
         await firebase.patch(
