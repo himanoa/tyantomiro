@@ -49,7 +49,7 @@ async def fork_fetch_task(client, firebase, youtube_key):
         path='youtube_channels'
     )
     for channel_id in channels.keys():
-        subscribed_servers = channels.get(channel_id).get('subscribed_servers')
+        subscribed_servers = channels.get(channel_id).get('subscribed_servers').keys()
         client.loop.create_task(
             fetch_task(
                 client,
